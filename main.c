@@ -42,6 +42,8 @@ int main(void){
     float goodEndingTimer = 0;
 
     SetTargetFPS(60);
+    SetExitKey(0);
+
 
     while(!WindowShouldClose()){
         // loading and timer logic
