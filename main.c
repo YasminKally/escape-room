@@ -3,18 +3,42 @@
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
+#include "fixfont.h"
 
 #define MAX_INPUT_CHARS 8
+
+static char* happyFace[] = {
+    "______________",
+    "|            |",
+    "| ==\\    /== |",
+    "|  0      0  |",
+    "|   \\____/   |",
+    "==============",
+    "|         oo |",
+    "|            |",
+};
+
+static char* sadFace[] = {
+    "______________",
+    "|            |",
+    "| ===    === |",
+    "|  x      x  |",
+    "|     /\\     |",
+    "==============",
+    "|         -- |",
+    "|            |",
+};
 
 int main(void){
     SetConfigFlags(FLAG_FULLSCREEN_MODE);
 
     InitWindow(0, 0, "loading screen");
+    mono = LoadFont("monofont.ttf");
     int screenWidth = GetMonitorWidth(0);
     int screenHeight = GetMonitorHeight(0);
     SetWindowSize(screenWidth, screenHeight);
 
-    Rectangle inputBox = { screenWidth / 2 - 500, screenHeight - 50, 1000, 45 };
+    Rectangle inputBox = { screenWidth / 2 - 500, screenHeight - 80, 1000, 60 };
 
     // loading and timer variables
     bool loadingComplete = false;
@@ -25,7 +49,7 @@ int main(void){
     float currentTime = 0;
     char percentageBuffer[100];
     char timeBuffer[100];
-    
+
     // input box variables
     bool flip = false;
     int inputCount = 0;
@@ -33,11 +57,12 @@ int main(void){
     float tickTimer = 0.8;
     float tick = 0;
     char inputBuffer[MAX_INPUT_CHARS + 1] = "\0";
-    
+
     // game win state
     bool solved = false;
     bool missedPassword = false;
     int attempts = 0;
+    int lineCount = 0;
     float warningTimer = 0;
     float badEndingTimer = 0;
     float goodEndingTimer = 0;
@@ -101,25 +126,21 @@ int main(void){
 
             if ((!loadingComplete || missedPassword) && !solved) {
                 // loading and timer rendering
-                DrawText("LOADING...",
-                    screenWidth / 2 - MeasureText("LOADING...", 80) / 2,
-                    screenHeight / 2 - 210, 80, RAYWHITE);
-                DrawText(percentageBuffer,
-                    screenWidth / 2 - MeasureText(percentageBuffer, 80) / 2,
-                    screenHeight / 2 - 130, 80, RAYWHITE);
+                typeText("LOADING...", screenWidth,
+                    screenHeight / 2 - 240, 80, RAYWHITE);
+                typeText(percentageBuffer, screenWidth,
+                    screenHeight / 2 - 150, 80, RAYWHITE);
                 // inputBuffer box rendering
                 if(missedPassword){
                     char errBuffer[128];
                     sprintf(errBuffer, "WRONG PASSWORD. LOST %d MINUTES OF TIME", 2);
-                    DrawText(errBuffer, screenWidth / 2 - MeasureText(errBuffer, 60) / 2,
-                        screenHeight - 110, 60, RED);
-                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 40,
+                    typeText(errBuffer, screenWidth, screenHeight - 110, 60, RED);
+                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 60,
                         (currentTime / totalTime) * 1200, 80, RED);
                     DrawRectangleLines(screenWidth / 2 - 600,
-                        screenHeight / 2 - 40, 1200, 80, RED);
-                    DrawText(timeBuffer,
-                        screenWidth / 2 - MeasureText(timeBuffer, 80) / 2,
-                        screenHeight / 2 + 60, 80, RED);
+                        screenHeight / 2 - 60, 1200, 80, RED);
+                    typeText(timeBuffer, screenWidth,
+                        screenHeight / 2 + 40, 80, RED);
                     // timer for wrong time
                     warningTimer -= GetFrameTime();
                     if(warningTimer <= 0){
@@ -127,56 +148,76 @@ int main(void){
                         missedPassword = false;
                     }
                 } else {
-                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 40,
+                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 60,
                         (currentTime / totalTime) * 1200, 80, PINK);
                     DrawRectangleLines(screenWidth / 2 - 600,
-                        screenHeight / 2 - 40, 1200, 80, PINK);
-                    DrawText(timeBuffer,
-                        screenWidth / 2 - MeasureText(timeBuffer, 80) / 2,
-                        screenHeight / 2 + 60, 80, RAYWHITE);
-                    DrawText("Enter the code to cancel:",
-                        screenWidth / 2 - MeasureText("Enter the code to cancel:", 60) / 2,
-                        screenHeight - 110, 60, RAYWHITE);
+                        screenHeight / 2 - 60, 1200, 80, PINK);
+                    typeText(timeBuffer, screenWidth,
+                        screenHeight / 2 + 40, 80, RAYWHITE);
+
+                    typeText("Enter the code to cancel:", screenWidth,
+                        screenHeight - 160, 60, RAYWHITE);
                     DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, PINK);
-                    DrawText(TextToLower(inputBuffer), inputBox.x + 5, inputBox.y + 4, 40, PINK);
+                    DrawTextEx(mono, TextToLower(inputBuffer),
+                        (Vector2){inputBox.x + 5, inputBox.y + 12}, 40, 10, PINK);
                     // underline blink rendering
                     if(flip){
-                        DrawText("_", inputBox.x + 8 + MeasureText(inputBuffer, 40), inputBox.y + 8, 40, PINK);
+                        float length = inputBox.x + 8 + MeasureTextEx(mono, inputBuffer, 40, 10).x;
+                        DrawTextEx(mono, "_", (Vector2){(int)length, inputBox.y + 8}, 40, 10, PINK);
                     }
                 }
             } else if(!solved){
                 badEndingTimer += GetFrameTime();
-                DrawText("LOADING COMPLETE",
-                    screenWidth / 2 - MeasureText("LOADING COMPLETE", 40) / 2,
-                    screenHeight / 2 - 20, 40, RAYWHITE);
-                if(badEndingTimer >= 3){
-                    DrawText("EVA IS ONLINE WORLDWIDE. YOU LOST",
-                        screenWidth / 2 - MeasureText("EVA IS ONLINE WORLDWIDE. YOU LOST", 60) / 2,
-                        screenHeight - 180, 60, RED);
+                typeText("LOADING COMPLETE", screenWidth,
+                    screenHeight / 2 + 140, 40, RAYWHITE);
+
+                int time = badEndingTimer * 1000;
+                if((time / 10) % 50 == 0 && lineCount < 8) lineCount += 1;
+                for(int t = 0; t < lineCount; t += 1){
+                    typeText(happyFace[t], screenWidth,
+                    screenHeight / 2 - 420 + 60 * t, 40, RED);
+                };
+
+                if(badEndingTimer >= 6){
+                    typeText("EVA IS ONLINE WORLDWIDE", screenWidth,
+                        screenHeight - 200, 60, RED);
+                }
+                if(badEndingTimer >= 8){
+                    typeText("YOU LOST", screenWidth,
+                        screenHeight - 120, 60, RED);
                 }
             } else {
                 goodEndingTimer += GetFrameTime();
-                DrawText("LOADING FAILED",
-                    screenWidth / 2 - MeasureText("LOADING FAILED", 40) / 2,
-                    screenHeight / 2 - 120, 40, RAYWHITE);
-                DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 40,
-                        (currentTime / totalTime) * 1200, 80, GRAY);
-                DrawRectangleLines(screenWidth / 2 - 600,
-                    screenHeight / 2 - 40, 1200, 80, GRAY);
-                DrawText(timeBuffer,
-                    screenWidth / 2 - MeasureText(timeBuffer, 80) / 2,
-                    screenHeight / 2 + 60, 80, GRAY);
-                DrawText(timeBuffer,
-                        screenWidth / 2 - MeasureText(timeBuffer, 80) / 2,
-                        screenHeight / 2 + 60, 80, GRAY);
+                typeText("LOADING FAILED", screenWidth,
+                    screenHeight / 2 + 140, 40, RAYWHITE);
+
                 if(goodEndingTimer >= 3){
-                    DrawText("EVA WAS NOT UPLOADED. YOU WON",
-                        screenWidth / 2 - MeasureText("EVA WAS NOT UPLOADED. YOU WON", 60) / 2,
-                        screenHeight - 180, 60, GREEN);
+                    int time = goodEndingTimer * 1000;
+                    if((time / 10) % 50 == 0 && lineCount < 8) lineCount += 1;
+                    for(int t = 0; t < lineCount; t += 1){
+                        typeText(sadFace[t], screenWidth,
+                        screenHeight / 2 - 420 + 60 * t, 40, GRAY);
+                    };
+                    if(goodEndingTimer >= 10){
+                        typeText("EVA WAS NOT UPLOADED", screenWidth,
+                            screenHeight - 200, 60, GREEN);
+                    }
+                    if(goodEndingTimer >= 12){
+                        typeText("YOU WON", screenWidth,
+                            screenHeight - 120, 60, GREEN);
+                    }
+                } else {
+                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 60,
+                        (currentTime / totalTime) * 1200, 80, GRAY);
+                    DrawRectangleLines(screenWidth / 2 - 600,
+                        screenHeight / 2 - 60, 1200, 80, GRAY);
+                    typeText(timeBuffer, screenWidth,
+                        screenHeight / 2 + 40, 80, GRAY);
                 }
             }
         EndDrawing();
     }
     CloseWindow();
+    UnloadFont(mono);
     return 0;
 }

@@ -4,10 +4,11 @@
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
+#include "fixfont.h"
 
 #define MAX_INPUT_CHARS 8
 
-static const char* passwords[] = {"EVA1973", "CONTROL5", "SHUTD0NW", "KEY3A9"};
+static const char* passwords[] = {"EVA1973", "CONTROL5", "KEY3A9"};
 
 int main(int argc, char** argv){
     // filter CLI boot setting
@@ -17,7 +18,7 @@ int main(int argc, char** argv){
         return 1;
     }
     int correctPassword = atoi(argv[1]);
-    if(correctPassword > 3 || correctPassword < 1){
+    if(correctPassword > 2 || correctPassword < 1){
         printf("invalid password index. aborting...");
         getchar();
         return 1;
@@ -29,11 +30,12 @@ int main(int argc, char** argv){
     correctPassword -= 1;
 
     InitWindow(0, 0, title);
+    mono = LoadFont("monofont.ttf");
     int screenWidth = GetMonitorWidth(0);
     int screenHeight = GetMonitorHeight(0);
     SetWindowSize(screenWidth, screenHeight);
 
-    Rectangle inputBox = { screenWidth / 2 - 500, screenHeight - 50, 1000, 45 };
+    Rectangle inputBox = { screenWidth / 2 - 500, screenHeight - 80, 1000, 60 };
 
     // input box variables
     bool flip = false;
@@ -42,7 +44,7 @@ int main(int argc, char** argv){
     float tickTimer = 0.8;
     float tick = 0;
     char inputBuffer[MAX_INPUT_CHARS + 1] = "\0";
-    
+
     // game win state
     bool solved = false;
     bool missedPassword = false;
@@ -95,18 +97,15 @@ int main(int argc, char** argv){
 
             if ((attempts < 4 || missedPassword) && !solved) {
                 // loading and timer rendering
-                DrawText(title,
-                    screenWidth / 2 - MeasureText(title, 80) / 2,
+                typeText(title, screenWidth,
                     screenHeight / 2 - 230, 80, RAYWHITE);
                 char triesBuffer[128];
                 sprintf(triesBuffer, "attemps left: %d", 4 - attempts);
                 // inputBuffer box rendering
                 if(missedPassword){
-                    DrawText(triesBuffer,
-                        screenWidth / 2 - MeasureText(triesBuffer, 80) / 2,
+                    typeText(triesBuffer, screenWidth,
                         screenHeight / 2 - 120, 80, RED);
-                     DrawText("wrong password",
-                        screenWidth / 2 - MeasureText("wrong password", 60) / 2,
+                     typeText("wrong password", screenWidth,
                         screenHeight - 110, 60, RED);
                     // timer for wrong time
                     warningTimer -= GetFrameTime();
@@ -115,73 +114,64 @@ int main(int argc, char** argv){
                         missedPassword = false;
                     }
                 } else {
-                    DrawText(triesBuffer,
-                        screenWidth / 2 - MeasureText(triesBuffer, 80) / 2,
+                    typeText(triesBuffer, screenWidth,
                         screenHeight / 2 - 120, 80, RAYWHITE);
-                    DrawText("Enter the code to cancel:",
-                        screenWidth / 2 - MeasureText("Enter the code to cancel:", 60) / 2,
-                        screenHeight - 110, 60, RAYWHITE);
+
+                    typeText("Enter the code to cancel:", screenWidth,
+                        screenHeight - 160, 60, RAYWHITE);
                     DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, PINK);
-                    DrawText(TextToLower(inputBuffer), inputBox.x + 5, inputBox.y + 4, 40, PINK);
+                    DrawTextEx(mono, TextToLower(inputBuffer),
+                        (Vector2){inputBox.x + 5, inputBox.y + 12}, 40, 10, PINK);
                     // underline blink rendering
                     if(flip){
-                        DrawText("_", inputBox.x + 8 + MeasureText(inputBuffer, 40), inputBox.y + 8, 40, PINK);
+                        float length = inputBox.x + 8 + MeasureTextEx(mono, inputBuffer, 40, 10).x;
+                        DrawTextEx(mono, "_", (Vector2){(int)length, inputBox.y + 8}, 40, 10, PINK);
                     }
                 }
             } else if(!solved){
                 badEndingTimer += GetFrameTime();
-                DrawText("CODE NOT CRACKED. SERVER FINISHED UPLOAD",
-                    screenWidth / 2 - MeasureText("CODE NOT CRACKED. SERVER FINISHED UPLOAD", 40) / 2,
+                typeText("CODE NOT CRACKED. SERVER FINISHED UPLOAD", screenWidth,
                     screenHeight / 2 - 20, 40, RED);
                 if(badEndingTimer >= 3){
                     switch(correctPassword){
                     case 0:
-                        DrawText("1st final password digits locked. good luck",
-                            screenWidth / 2 - MeasureText("1st final password digits locked. good luck", 60) / 2,
+                        typeText("1st final password digits locked. good luck", screenWidth,
                             screenHeight - 180, 60, RED);
                         break;
                     case 1:
-                        DrawText("2nd final password digits locked. good luck",
-                            screenWidth / 2 - MeasureText("2nd final password digits locked. good luck", 60) / 2,
+                        typeText("2nd final password digits locked. good luck", screenWidth,
                             screenHeight - 180, 60, RED);
                         break;
                     case 2:
-                        DrawText("3rd final password digits locked. good luck",
-                            screenWidth / 2 - MeasureText("3rd final password digits locked. good luck", 60) / 2,
+                        typeText("3rd final password digits locked. good luck", screenWidth,
                             screenHeight - 180, 60, RED);
                         break;
                     case 3:
-                        DrawText("4th final password digits locked. good luck",
-                            screenWidth / 2 - MeasureText("4th final password digits locked. good luck", 60) / 2,
+                        typeText("4th final password digits locked. good luck", screenWidth,
                             screenHeight - 180, 60, RED);
                         break;
                     }
                 }
             } else {
-                DrawText("CODE CRACKED. SERVER UPLOAD CANCELLED",
-                    screenWidth / 2 - MeasureText("CODE CRACKED. SERVER UPLOAD CANCELLED", 40) / 2,
+                typeText("CODE CRACKED. SERVER UPLOAD CANCELLED", screenWidth,
                     screenHeight / 2 - 20, 40, RAYWHITE);
                 goodEndingTimer += GetFrameTime();
                 if(goodEndingTimer >= 3){
                     switch(correctPassword){
                     case 0:
-                        DrawText("1st final password digits are 29",
-                            screenWidth / 2 - MeasureText("1st final password digits are 29", 60) / 2,
+                        typeText("1st final password digits are 29", screenWidth,
                             screenHeight - 180, 60, GREEN);
                         break;
                     case 1:
-                        DrawText("1st final password digits are 08",
-                            screenWidth / 2 - MeasureText("1st final password digits are 08", 60) / 2,
+                        typeText("1st final password digits are 08", screenWidth,
                             screenHeight - 180, 60, GREEN);
                         break;
                     case 2:
-                        DrawText("1st final password digits are 19",
-                            screenWidth / 2 - MeasureText("1st final password digits are 19", 60) / 2,
+                        typeText("1st final password digits are 19", screenWidth,
                             screenHeight - 180, 60, GREEN);
                         break;
                     case 3:
-                        DrawText("1st final password digits are 97",
-                            screenWidth / 2 - MeasureText("1st final password digits are 97", 60) / 2,
+                        typeText("1st final password digits are 97", screenWidth,
                             screenHeight - 180, 60, GREEN);
                         break;
                     }
@@ -190,5 +180,6 @@ int main(int argc, char** argv){
         EndDrawing();
     }
     CloseWindow();
+    UnloadFont(mono);
     return 0;
 }
