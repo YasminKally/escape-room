@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
@@ -44,7 +45,6 @@ int main(void){
     SetTargetFPS(60);
     SetExitKey(0);
 
-
     while(!WindowShouldClose()){
         // loading and timer logic
         if(!loadingComplete && !solved){
@@ -73,7 +73,7 @@ int main(void){
 
         while(key > 0){
             if((key >= 32) && (key <= 125) && (inputCount < MAX_INPUT_CHARS)){
-                inputBuffer[inputCount] = (char)key;
+                inputBuffer[inputCount] = toupper(key);
                 inputCount++;
             }
             key = GetCharPressed();
@@ -84,7 +84,7 @@ int main(void){
         }
         inputBuffer[inputCount] = '\0';
 
-        if(IsKeyPressed(KEY_ENTER) && !missedPassword){
+        if(IsKeyPressed(KEY_ENTER) && !missedPassword && inputCount > 0){
             if(!strcmp(inputBuffer, "29081997")){
                 solved = true;
             } else {
@@ -150,8 +150,8 @@ int main(void){
                     screenWidth / 2 - MeasureText("LOADING COMPLETE", 40) / 2,
                     screenHeight / 2 - 20, 40, RAYWHITE);
                 if(badEndingTimer >= 3){
-                    DrawText("NUCLEAR ATTACK BEGAN. YOU LOST",
-                        screenWidth / 2 - MeasureText("NUCLEAR ATTACK BEGAN. YOU LOST", 60) / 2,
+                    DrawText("EVA IS ONLINE WORLDWIDE. YOU LOST",
+                        screenWidth / 2 - MeasureText("EVA IS ONLINE WORLDWIDE. YOU LOST", 60) / 2,
                         screenHeight - 180, 60, RED);
                 }
             } else {
@@ -170,13 +170,13 @@ int main(void){
                         screenWidth / 2 - MeasureText(timeBuffer, 80) / 2,
                         screenHeight / 2 + 60, 80, GRAY);
                 if(goodEndingTimer >= 3){
-                    DrawText("NUCLEAR ATTACK STOPPED. YOU WON",
-                        screenWidth / 2 - MeasureText("NUCLEAR ATTACK STOPPED. YOU WON", 60) / 2,
+                    DrawText("EVA WAS NOT UPLOADED. YOU WON",
+                        screenWidth / 2 - MeasureText("EVA WAS NOT UPLOADED. YOU WON", 60) / 2,
                         screenHeight - 180, 60, GREEN);
                 }
             }
         EndDrawing();
     }
-
+    CloseWindow();
     return 0;
 }
