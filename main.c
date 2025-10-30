@@ -133,12 +133,12 @@ int main(void){
                 // inputBuffer box rendering
                 if(missedPassword){
                     char errBuffer[128];
-                    sprintf(errBuffer, "WRONG PASSWORD. LOST %d MINUTES OF TIME", 2);
-                    typeText(errBuffer, screenWidth, screenHeight - 110, 60, RED);
-                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 60,
-                        (currentTime / totalTime) * 1200, 80, RED);
-                    DrawRectangleLines(screenWidth / 2 - 600,
-                        screenHeight / 2 - 60, 1200, 80, RED);
+                    sprintf(errBuffer, "SENHA ERRADA. PERDEU %d MINUTOS DO TEMPO", 2);
+                    typeText(errBuffer, screenWidth, screenHeight - 110, 40, RED);
+                    DrawRectangle(screenWidth / 2 - 500, screenHeight / 2 - 60,
+                        (currentTime / totalTime) * 1000, 80, RED);
+                    DrawRectangleLines(screenWidth / 2 - 500,
+                        screenHeight / 2 - 60, 1000, 80, RED);
                     typeText(timeBuffer, screenWidth,
                         screenHeight / 2 + 40, 80, RED);
                     // timer for wrong time
@@ -148,15 +148,15 @@ int main(void){
                         missedPassword = false;
                     }
                 } else {
-                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 60,
-                        (currentTime / totalTime) * 1200, 80, PINK);
-                    DrawRectangleLines(screenWidth / 2 - 600,
-                        screenHeight / 2 - 60, 1200, 80, PINK);
+                    DrawRectangle(screenWidth / 2 - 500, screenHeight / 2 - 60,
+                        (currentTime / totalTime) * 1000, 80, PINK);
+                    DrawRectangleLines(screenWidth / 2 - 500,
+                        screenHeight / 2 - 60, 1000, 80, PINK);
                     typeText(timeBuffer, screenWidth,
                         screenHeight / 2 + 40, 80, RAYWHITE);
 
-                    typeText("Enter the code to cancel:", screenWidth,
-                        screenHeight - 160, 60, RAYWHITE);
+                    typeText(" Digite o codigo para cancelar:", screenWidth,
+                        screenHeight - 160, 40, RAYWHITE);
                     DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, PINK);
                     DrawTextEx(mono, TextToLower(inputBuffer),
                         (Vector2){inputBox.x + 5, inputBox.y + 12}, 40, 10, PINK);
@@ -168,7 +168,7 @@ int main(void){
                 }
             } else if(!solved){
                 badEndingTimer += GetFrameTime();
-                typeText("LOADING COMPLETE", screenWidth,
+                typeText("LOADING COMPLETO", screenWidth,
                     screenHeight / 2 + 140, 40, RAYWHITE);
 
                 int time = badEndingTimer * 1000;
@@ -179,16 +179,16 @@ int main(void){
                 };
 
                 if(badEndingTimer >= 6){
-                    typeText("EVA IS ONLINE WORLDWIDE", screenWidth,
+                    typeText("EVA ONLINE NO MUNDO", screenWidth,
                         screenHeight - 200, 60, RED);
                 }
                 if(badEndingTimer >= 8){
-                    typeText("YOU LOST", screenWidth,
+                    typeText("VOCE PERDEU", screenWidth,
                         screenHeight - 120, 60, RED);
                 }
             } else {
                 goodEndingTimer += GetFrameTime();
-                typeText("LOADING FAILED", screenWidth,
+                typeText("LOADING FALHOU", screenWidth,
                     screenHeight / 2 + 140, 40, RAYWHITE);
 
                 if(goodEndingTimer >= 3){
@@ -199,18 +199,18 @@ int main(void){
                         screenHeight / 2 - 420 + 60 * t, 40, GRAY);
                     };
                     if(goodEndingTimer >= 10){
-                        typeText("EVA WAS NOT UPLOADED", screenWidth,
+                        typeText("UPLOAD DA EVA CANCELADO", screenWidth,
                             screenHeight - 200, 60, GREEN);
                     }
                     if(goodEndingTimer >= 12){
-                        typeText("YOU WON", screenWidth,
+                        typeText("VOCE VENCEU", screenWidth,
                             screenHeight - 120, 60, GREEN);
                     }
                 } else {
-                    DrawRectangle(screenWidth / 2 - 600, screenHeight / 2 - 60,
-                        (currentTime / totalTime) * 1200, 80, GRAY);
-                    DrawRectangleLines(screenWidth / 2 - 600,
-                        screenHeight / 2 - 60, 1200, 80, GRAY);
+                    DrawRectangle(screenWidth / 2 - 500, screenHeight / 2 - 60,
+                        (currentTime / totalTime) * 1000, 80, GRAY);
+                    DrawRectangleLines(screenWidth / 2 - 500,
+                        screenHeight / 2 - 60, 1000, 80, GRAY);
                     typeText(timeBuffer, screenWidth,
                         screenHeight / 2 + 40, 80, GRAY);
                 }

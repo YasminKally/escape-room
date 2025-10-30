@@ -18,7 +18,7 @@ int main(int argc, char** argv){
         return 1;
     }
     int correctPassword = atoi(argv[1]);
-    if(correctPassword > 2 || correctPassword < 1){
+    if(correctPassword > 3 || correctPassword < 1){
         printf("invalid password index. aborting...");
         getchar();
         return 1;
@@ -100,12 +100,12 @@ int main(int argc, char** argv){
                 typeText(title, screenWidth,
                     screenHeight / 2 - 230, 80, RAYWHITE);
                 char triesBuffer[128];
-                sprintf(triesBuffer, "attemps left: %d", 4 - attempts);
+                sprintf(triesBuffer, "tentativas: %d", 4 - attempts);
                 // inputBuffer box rendering
                 if(missedPassword){
                     typeText(triesBuffer, screenWidth,
                         screenHeight / 2 - 120, 80, RED);
-                     typeText("wrong password", screenWidth,
+                     typeText("senha errada", screenWidth,
                         screenHeight - 110, 60, RED);
                     // timer for wrong time
                     warningTimer -= GetFrameTime();
@@ -117,8 +117,8 @@ int main(int argc, char** argv){
                     typeText(triesBuffer, screenWidth,
                         screenHeight / 2 - 120, 80, RAYWHITE);
 
-                    typeText("Enter the code to cancel:", screenWidth,
-                        screenHeight - 160, 60, RAYWHITE);
+                    typeText("Digite o codigo para cancelar:", screenWidth,
+                        screenHeight - 160, 40, RAYWHITE);
                     DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, PINK);
                     DrawTextEx(mono, TextToLower(inputBuffer),
                         (Vector2){inputBox.x + 5, inputBox.y + 12}, 40, 10, PINK);
@@ -135,20 +135,24 @@ int main(int argc, char** argv){
                 if(badEndingTimer >= 3){
                     switch(correctPassword){
                     case 0:
-                        typeText("1st final password digits locked. good luck", screenWidth,
-                            screenHeight - 180, 60, RED);
+                        typeText("primeira parte da senha bloqueada", screenWidth,
+                            screenHeight - 180, 40, RED);
+                        typeText("boa sorte", screenWidth, screenHeight - 140, 40, RED);
                         break;
                     case 1:
-                        typeText("2nd final password digits locked. good luck", screenWidth,
-                            screenHeight - 180, 60, RED);
+                        typeText("segunda parte da senha bloqueada", screenWidth,
+                            screenHeight - 180, 40, RED);
+                        typeText("boa sorte", screenWidth, screenHeight - 140, 40, RED);
                         break;
                     case 2:
-                        typeText("3rd final password digits locked. good luck", screenWidth,
-                            screenHeight - 180, 60, RED);
+                        typeText("terceira parte da senha bloqueada", screenWidth,
+                            screenHeight - 180, 40, RED);
+                        typeText("boa sorte", screenWidth, screenHeight - 140, 40, RED);
                         break;
                     case 3:
-                        typeText("4th final password digits locked. good luck", screenWidth,
-                            screenHeight - 180, 60, RED);
+                        typeText("quarta parte da senha bloqueada", screenWidth,
+                            screenHeight - 180, 40, RED);
+                        typeText("boa sorte", screenWidth, screenHeight - 140, 40, RED);
                         break;
                     }
                 }
@@ -159,20 +163,20 @@ int main(int argc, char** argv){
                 if(goodEndingTimer >= 3){
                     switch(correctPassword){
                     case 0:
-                        typeText("1st final password digits are 29", screenWidth,
-                            screenHeight - 180, 60, GREEN);
+                        typeText("primeira parte da senha: 29", screenWidth,
+                            screenHeight - 180, 40, GREEN);
                         break;
                     case 1:
-                        typeText("1st final password digits are 08", screenWidth,
-                            screenHeight - 180, 60, GREEN);
+                        typeText("segunda parte da senha: 08", screenWidth,
+                            screenHeight - 180, 40, GREEN);
                         break;
                     case 2:
-                        typeText("1st final password digits are 19", screenWidth,
-                            screenHeight - 180, 60, GREEN);
+                        typeText("terceira parte da senha: 19", screenWidth,
+                            screenHeight - 180, 40, GREEN);
                         break;
                     case 3:
-                        typeText("1st final password digits are 97", screenWidth,
-                            screenHeight - 180, 60, GREEN);
+                        typeText("quarta parte da senha: 97", screenWidth,
+                            screenHeight - 180, 40, GREEN);
                         break;
                     }
                 }
