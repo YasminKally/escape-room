@@ -75,6 +75,7 @@ int main(void){
         if(!loadingComplete && !solved){
             currentTime += GetFrameTime();
             percentage = (currentTime / totalTime) * 100;
+            percentage = percentage > 100 ? 100 : percentage;
             sprintf(percentageBuffer, "%d/100%%", percentage);
         }
         if(currentTime >= totalTime){
